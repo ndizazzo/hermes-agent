@@ -40,6 +40,11 @@ dependencies = [
   "PyJWT[crypto]",
 ]
 
+[project.urls]
+Homepage = "https://github.com/ndizazzo/hermes-agent"
+Repository = "https://github.com/ndizazzo/hermes-agent"
+Issues = "https://github.com/ndizazzo/hermes-agent/issues"
+
 [project.optional-dependencies]
 modal = ["swe-rex[modal]>=1.4.0"]
 daytona = ["daytona>=0.148.0"]
