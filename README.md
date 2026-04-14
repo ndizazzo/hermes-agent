@@ -1,177 +1,75 @@
-<p align="center">
-  <img src="assets/banner.png" alt="Hermes Agent" width="100%">
-</p>
+# Hermes Agent Wrapper
 
-# Hermes Agent ☤
+This repository is a wrapper around the upstream Hermes Agent source from [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent).
 
-<p align="center">
-  <a href="https://hermes-agent.nousresearch.com/docs/"><img src="https://img.shields.io/badge/Docs-hermes--agent.nousresearch.com-FFD700?style=for-the-badge" alt="Documentation"></a>
-  <a href="https://discord.gg/NousResearch"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
-  <a href="https://github.com/NousResearch/hermes-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
-  <a href="https://nousresearch.com"><img src="https://img.shields.io/badge/Built%20by-Nous%20Research-blueviolet?style=for-the-badge" alt="Built by Nous Research"></a>
-</p>
+The application source no longer lives at the wrapper root. It is pinned as a git submodule at:
 
-**The self-improving AI agent built by [Nous Research](https://nousresearch.com).** It's the only agent with a built-in learning loop — it creates skills from experience, improves them during use, nudges itself to persist knowledge, searches its own past conversations, and builds a deepening model of who you are across sessions. Run it on a $5 VPS, a GPU cluster, or serverless infrastructure that costs nearly nothing when idle. It's not tied to your laptop — talk to it from Telegram while it works on a cloud VM.
+- `upstream/hermes-agent`
 
-Use any model you want — [Nous Portal](https://portal.nousresearch.com), [OpenRouter](https://openrouter.ai) (200+ models), [z.ai/GLM](https://z.ai), [Kimi/Moonshot](https://platform.moonshot.ai), [MiniMax](https://www.minimax.io), OpenAI, or your own endpoint. Switch with `hermes model` — no code changes, no lock-in.
+The current pinned upstream release lineage is:
 
-<table>
-<tr><td><b>A real terminal interface</b></td><td>Full TUI with multiline editing, slash-command autocomplete, conversation history, interrupt-and-redirect, and streaming tool output.</td></tr>
-<tr><td><b>Lives where you do</b></td><td>Telegram, Discord, Slack, WhatsApp, Signal, and CLI — all from a single gateway process. Voice memo transcription, cross-platform conversation continuity.</td></tr>
-<tr><td><b>A closed learning loop</b></td><td>Agent-curated memory with periodic nudges. Autonomous skill creation after complex tasks. Skills self-improve during use. FTS5 session search with LLM summarization for cross-session recall. <a href="https://github.com/plastic-labs/honcho">Honcho</a> dialectic user modeling. Compatible with the <a href="https://agentskills.io">agentskills.io</a> open standard.</td></tr>
-<tr><td><b>Scheduled automations</b></td><td>Built-in cron scheduler with delivery to any platform. Daily reports, nightly backups, weekly audits — all in natural language, running unattended.</td></tr>
-<tr><td><b>Delegates and parallelizes</b></td><td>Spawn isolated subagents for parallel workstreams. Write Python scripts that call tools via RPC, collapsing multi-step pipelines into zero-context-cost turns.</td></tr>
-<tr><td><b>Runs anywhere, not just your laptop</b></td><td>Six terminal backends — local, Docker, SSH, Daytona, Singularity, and Modal. Daytona and Modal offer serverless persistence — your agent's environment hibernates when idle and wakes on demand, costing nearly nothing between sessions. Run it on a $5 VPS or a GPU cluster.</td></tr>
-<tr><td><b>Research-ready</b></td><td>Batch trajectory generation, Atropos RL environments, trajectory compression for training the next generation of tool-calling models.</td></tr>
-</table>
+- upstream tag: `v2026.4.13`
+- upstream commit: `1af2e18d408a9dcc2c61d6fc1eef5c6667f8e254`
 
----
+## Clone and update
 
-## Quick Install
+Clone with submodules:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+git clone --recurse-submodules git@github.com:ndizazzo/hermes-agent.git
 ```
 
-Works on Linux, macOS, and WSL2. The installer handles everything — Python, Node.js, dependencies, and the `hermes` command. No prerequisites except git.
-
-> **Windows:** Native Windows is not supported. Please install [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and run the command above.
-
-After installation:
+If you already cloned the wrapper:
 
 ```bash
-source ~/.bashrc    # reload shell (or: source ~/.zshrc)
-hermes              # start chatting!
+git submodule update --init --recursive
 ```
 
----
+## Repository layout
 
-## Getting Started
+- wrapper-owned files live at the repo root
+- upstream application code lives in `upstream/hermes-agent`
+- nested upstream submodules such as `mini-swe-agent` and `tinker-atropos` are owned by the upstream submodule, not by the wrapper root
+
+## Build from the pinned upstream source
+
+Python artifacts:
 
 ```bash
-hermes              # Interactive CLI — start a conversation
-hermes model        # Choose your LLM provider and model
-hermes tools        # Configure which tools are enabled
-hermes config set   # Set individual config values
-hermes gateway      # Start the messaging gateway (Telegram, Discord, etc.)
-hermes setup        # Run the full setup wizard (configures everything at once)
-hermes claw migrate # Migrate from OpenClaw (if coming from OpenClaw)
-hermes update       # Update to the latest version
-hermes doctor       # Diagnose any issues
+cd upstream/hermes-agent
+python -m build --sdist --wheel
 ```
 
-📖 **[Full documentation →](https://hermes-agent.nousresearch.com/docs/)**
-
-## CLI vs Messaging Quick Reference
-
-Hermes has two entry points: start the terminal UI with `hermes`, or run the gateway and talk to it from Telegram, Discord, Slack, WhatsApp, Signal, or Email. Once you're in a conversation, many slash commands are shared across both interfaces.
-
-| Action | CLI | Messaging platforms |
-|---------|-----|---------------------|
-| Start chatting | `hermes` | Run `hermes gateway setup` + `hermes gateway start`, then send the bot a message |
-| Start fresh conversation | `/new` or `/reset` | `/new` or `/reset` |
-| Change model | `/model [provider:model]` | `/model [provider:model]` |
-| Set a personality | `/personality [name]` | `/personality [name]` |
-| Retry or undo the last turn | `/retry`, `/undo` | `/retry`, `/undo` |
-| Compress context / check usage | `/compress`, `/usage`, `/insights [--days N]` | `/compress`, `/usage`, `/insights [days]` |
-| Browse skills | `/skills` or `/<skill-name>` | `/skills` or `/<skill-name>` |
-| Interrupt current work | `Ctrl+C` or send a new message | `/stop` or send a new message |
-| Platform-specific status | `/platforms` | `/status`, `/sethome` |
-
-For the full command lists, see the [CLI guide](https://hermes-agent.nousresearch.com/docs/user-guide/cli) and the [Messaging Gateway guide](https://hermes-agent.nousresearch.com/docs/user-guide/messaging).
-
----
-
-## Documentation
-
-All documentation lives at **[hermes-agent.nousresearch.com/docs](https://hermes-agent.nousresearch.com/docs/)**:
-
-| Section | What's Covered |
-|---------|---------------|
-| [Quickstart](https://hermes-agent.nousresearch.com/docs/getting-started/quickstart) | Install → setup → first conversation in 2 minutes |
-| [CLI Usage](https://hermes-agent.nousresearch.com/docs/user-guide/cli) | Commands, keybindings, personalities, sessions |
-| [Configuration](https://hermes-agent.nousresearch.com/docs/user-guide/configuration) | Config file, providers, models, all options |
-| [Messaging Gateway](https://hermes-agent.nousresearch.com/docs/user-guide/messaging) | Telegram, Discord, Slack, WhatsApp, Signal, Home Assistant |
-| [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security) | Command approval, DM pairing, container isolation |
-| [Tools & Toolsets](https://hermes-agent.nousresearch.com/docs/user-guide/features/tools) | 40+ tools, toolset system, terminal backends |
-| [Skills System](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) | Procedural memory, Skills Hub, creating skills |
-| [Memory](https://hermes-agent.nousresearch.com/docs/user-guide/features/memory) | Persistent memory, user profiles, best practices |
-| [MCP Integration](https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp) | Connect any MCP server for extended capabilities |
-| [Cron Scheduling](https://hermes-agent.nousresearch.com/docs/user-guide/features/cron) | Scheduled tasks with platform delivery |
-| [Context Files](https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files) | Project context that shapes every conversation |
-| [Architecture](https://hermes-agent.nousresearch.com/docs/developer-guide/architecture) | Project structure, agent loop, key classes |
-| [Contributing](https://hermes-agent.nousresearch.com/docs/developer-guide/contributing) | Development setup, PR process, code style |
-| [CLI Reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands) | All commands and flags |
-| [Environment Variables](https://hermes-agent.nousresearch.com/docs/reference/environment-variables) | Complete env var reference |
-
----
-
-## Migrating from OpenClaw
-
-If you're coming from OpenClaw, Hermes can automatically import your settings, memories, skills, and API keys.
-
-**During first-time setup:** The setup wizard (`hermes setup`) automatically detects `~/.openclaw` and offers to migrate before configuration begins.
-
-**Anytime after install:**
+Docker image smoke build:
 
 ```bash
-hermes claw migrate              # Interactive migration (full preset)
-hermes claw migrate --dry-run    # Preview what would be migrated
-hermes claw migrate --preset user-data   # Migrate without secrets
-hermes claw migrate --overwrite  # Overwrite existing conflicts
+docker build -f upstream/hermes-agent/Dockerfile upstream/hermes-agent
 ```
 
-What gets imported:
-- **SOUL.md** — persona file
-- **Memories** — MEMORY.md and USER.md entries
-- **Skills** — user-created skills → `~/.hermes/skills/openclaw-imports/`
-- **Command allowlist** — approval patterns
-- **Messaging settings** — platform configs, allowed users, working directory
-- **API keys** — allowlisted secrets (Telegram, OpenRouter, OpenAI, Anthropic, ElevenLabs)
-- **TTS assets** — workspace audio files
-- **Workspace instructions** — AGENTS.md (with `--workspace-target`)
+## Updating the pinned upstream version
 
-See `hermes claw migrate --help` for all options, or use the `openclaw-migration` skill for an interactive agent-guided migration with dry-run previews.
-
----
-
-## Contributing
-
-We welcome contributions! See the [Contributing Guide](https://hermes-agent.nousresearch.com/docs/developer-guide/contributing) for development setup, code style, and PR process.
-
-Quick start for contributors:
+Move the submodule to the desired upstream tag or commit, then commit the wrapper change:
 
 ```bash
-git clone https://github.com/NousResearch/hermes-agent.git
-cd hermes-agent
-git submodule update --init mini-swe-agent   # required terminal backend
-curl -LsSf https://astral.sh/uv/install.sh | sh
-uv venv venv --python 3.11
-source venv/bin/activate
-uv pip install -e ".[all,dev]"
-uv pip install -e "./mini-swe-agent"
-python -m pytest tests/ -q
+git -C upstream/hermes-agent fetch --tags
+git -C upstream/hermes-agent checkout <upstream-tag-or-commit>
+git add upstream/hermes-agent .gitmodules
 ```
 
-> **RL Training (optional):** To work on the RL/Tinker-Atropos integration, also run:
-> ```bash
-> git submodule update --init tinker-atropos
-> uv pip install -e "./tinker-atropos"
-> ```
+If the upstream submodule set changes, refresh nested submodules too:
 
----
+```bash
+git submodule update --init --recursive
+```
 
-## Community
+## Release flow
 
-- 💬 [Discord](https://discord.gg/NousResearch)
-- 📚 [Skills Hub](https://agentskills.io)
-- 🐛 [Issues](https://github.com/NousResearch/hermes-agent/issues)
-- 💡 [Discussions](https://github.com/NousResearch/hermes-agent/discussions)
+Wrapper release tags publish artifacts for whatever upstream revision is pinned by `upstream/hermes-agent`.
 
----
+GitHub Actions in this repository:
 
-## License
+- check out the wrapper tag with `submodules: recursive`
+- build Python artifacts from `upstream/hermes-agent`
+- build and publish the Docker image from `upstream/hermes-agent/Dockerfile`
 
-MIT — see [LICENSE](LICENSE).
-
-Built by [Nous Research](https://nousresearch.com).
+That keeps wrapper metadata and release automation in this repository while leaving the Hermes application source under upstream control.
