@@ -1,0 +1,10 @@
+.git
+.github
+.venv
+.pytest_cache
+logs
+upstream/hermes-agent/.git
+upstream/hermes-agent/.venv
+upstream/hermes-agent/build
+upstream/hermes-agent/dist
+upstream/hermes-agent/hermes_agent.egg-info

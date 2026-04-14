@@ -37,8 +37,8 @@ jobs:
       - name: Build image (amd64, smoke test)
         uses: docker/build-push-action@v6
         with:
-          context: upstream/hermes-agent
-          file: upstream/hermes-agent/Dockerfile
+          context: .
+          file: Dockerfile
           load: true
           platforms: linux/amd64
           tags: ${{ env.IMAGE_NAME }}:test
@@ -62,8 +62,8 @@ jobs:
       - name: Push multi-arch image
         uses: docker/build-push-action@v6
         with:
-          context: upstream/hermes-agent
-          file: upstream/hermes-agent/Dockerfile
+          context: .
+          file: Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_NAME }}:${{ github.event.release.tag_name }}
