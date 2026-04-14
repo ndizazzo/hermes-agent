@@ -3,8 +3,14 @@ name: Tests
 on:
   push:
     branches: [main]
+    paths:
+      - 'upstream/hermes-agent'
+      - '.github/workflows/tests.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'upstream/hermes-agent'
+      - '.github/workflows/tests.yml'
 
 # Cancel in-progress runs for the same PR/branch
 concurrency:
@@ -18,6 +24,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
@@ -26,12 +34,14 @@ jobs:
         run: uv python install 3.11
 
       - name: Install dependencies
+        working-directory: upstream/hermes-agent
         run: |
           uv venv .venv --python 3.11
           source .venv/bin/activate
           uv pip install -e ".[all,dev]"
 
       - name: Run tests
+        working-directory: upstream/hermes-agent
         run: |
           source .venv/bin/activate
           python -m pytest tests/ -q --ignore=tests/integration --tb=short -n auto
