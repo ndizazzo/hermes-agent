@@ -1,6 +1,3 @@
-[submodule "mini-swe-agent"]
-	path = mini-swe-agent
-	url = https://github.com/SWE-agent/mini-swe-agent
-[submodule "tinker-atropos"]
-	path = tinker-atropos
-	url = https://github.com/nousresearch/tinker-atropos
+[submodule "upstream/hermes-agent"]
+	path = upstream/hermes-agent
+	url = ssh://git@github.com/NousResearch/hermes-agent.git
